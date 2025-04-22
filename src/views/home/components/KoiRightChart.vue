@@ -59,7 +59,7 @@ const initChart = () => {
       show: true
     },
     legend: {
-      data: ["柱形订单量", "折线订单量"],
+      data: ["柱形数据", "折线数据"],
       right: "5%"
     },
     xAxis: [
@@ -79,11 +79,11 @@ const initChart = () => {
     ],
     series: [
       {
-        name: "柱形订单量",
+        name: "柱形数据",
         type: "bar",
         tooltip: {
           valueFormatter: function (value: any) {
-            return value + " V";
+            return value ;
           }
         },
         label: {
@@ -93,11 +93,11 @@ const initChart = () => {
         }
       },
       {
-        name: "折线订单量",
+        name: "折线数据",
         type: "line",
         tooltip: {
           valueFormatter: function (value: any) {
-            return value + " V";
+            return value ;
           }
         },
         // 圆滑连接
@@ -125,7 +125,7 @@ const getData = () => {
   let num6 = randomInt(700, 800);
   let num7 = randomInt(800, 900);
   let num8 = randomInt(900, 1000);
-  xChartData.value = ["20240903", "20240904", "20240905", "20240906", "20240907", "20240908", "20240909", "20240910"];
+  xChartData.value = ["20250503", "20250504", "20250505", "20250506", "20250507", "20250508", "20250509", "20250510"];
   yChartData.value.push(num1, num2, num3, num4, num5, num6, num7, num8);
   // 调用接口方法
   // listTenDayData().then(res => {

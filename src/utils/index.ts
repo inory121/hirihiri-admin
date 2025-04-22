@@ -1,3 +1,15 @@
+// 格式化视频时长
+export const formatDuration = (seconds: number) => {
+  const total = Math.round(seconds)
+  const hours = Math.floor(total / 3600)
+  const minutes = Math.floor((total % 3600) / 60)
+  const secs = total % 60
+
+  // 根据小时数决定格式
+  return hours > 0
+    ? `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+    : `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+}
 export const formatDateTime = (
   isoString: string | undefined,
   format: string = 'YYYY-MM-DD HH:mm:ss', // 默认格式

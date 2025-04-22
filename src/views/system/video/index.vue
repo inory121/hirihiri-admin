@@ -3,34 +3,34 @@
     <KoiCard>
       <!-- 搜索条件 -->
       <el-form v-show="showSearch" :inline="true">
-        <el-form-item label="登录账号" prop="loginName">
+        <el-form-item label="视频ID" prop="vid">
           <el-input
-            placeholder="请输入登录账号"
-            v-model="searchParams.loginName"
+            placeholder="请输入视频ID"
+            v-model="searchParams.vid"
             clearable
             style="width: 200px"
             @keyup.enter.native="handleListPage"
           ></el-input>
         </el-form-item>
-        <el-form-item label="用户名称" prop="userName">
+        <el-form-item label="用户名" prop="username">
           <el-input
-            placeholder="请输入用户名称"
-            v-model="searchParams.userName"
+            placeholder="请输入用户名"
+            v-model="searchParams.username"
             clearable
             style="width: 200px"
             @keyup.enter.native="handleListPage"
           ></el-input>
         </el-form-item>
-        <el-form-item label="手机号" prop="phone">
+        <el-form-item label="视频标题" prop="title">
           <el-input
-            placeholder="请输入手机号"
-            v-model="searchParams.phone"
+            placeholder="请输入视频标题"
+            v-model="searchParams.title"
             clearable
             style="width: 200px"
             @keyup.enter.native="handleListPage"
           ></el-input>
         </el-form-item>
-        <el-form-item label="登录时间" prop="loginTime">
+        <el-form-item label="上传时间" prop="createDate">
           <el-date-picker
             v-model="dateRange"
             type="datetimerange"
@@ -81,22 +81,16 @@
       >
         <el-table-column type="selection" width="55" align="center" fixed />
         <el-table-column
-          label="视频ID"
+          label="VID"
           prop="vid"
           width="80px"
           align="center"
           type="index"
           :show-overflow-tooltip="true"
         ></el-table-column>
+        <el-table-column label="UID" prop="uid" width="80px" align="center" :show-overflow-tooltip="true"></el-table-column>
         <el-table-column
-          label="投稿用户ID"
-          prop="uid"
-          width="80px"
-          align="center"
-          :show-overflow-tooltip="true"
-        ></el-table-column>
-        <el-table-column
-          label="投稿用户名称"
+          label="用户名"
           prop="username"
           width="80px"
           align="center"
@@ -114,17 +108,27 @@
             <KoiTag :tagOptions="videoTypeOptions" :value="scope.row.type"></KoiTag>
           </template>
         </el-table-column>
-        <el-table-column label="作者声明" prop="auth" width="100px" align="center">
+        <el-table-column label="作者声明" prop="auth" width="100px" align="center" :show-overflow-tooltip="true">
           <template #default="scope">
             <KoiTag :tagOptions="authTypeOptions" :value="scope.row.auth"></KoiTag>
           </template>
         </el-table-column>
-        <el-table-column label="视频时长" prop="duration" width="100px" align="center"></el-table-column>
+        <el-table-column label="视频状态" prop="status" width="100px" align="center">
+          <template #default="scope">
+            <KoiTag :tagOptions="videoStatusOptions" :value="scope.row.status"></KoiTag>
+          </template>
+        </el-table-column>
+
         <el-table-column label="分区信息" width="200px" align="center" :show-overflow-tooltip="true">
           <template #default="scope">
             <el-tag type="success">{{ scope.row.mcId }}</el-tag>
             →
             <el-tag type="warning">{{ scope.row.scId }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="视频时长" prop="duration" width="100px" align="center">
+          <template #default="scope">
+            {{ formatDuration(scope.row.duration) }}
           </template>
         </el-table-column>
         <el-table-column label="视频标签" prop="tags" width="100px" align="center" :show-overflow-tooltip="true">
@@ -145,7 +149,6 @@
           <template #default="scope">
             <div class="flex flex-justify-center">
               <el-image
-                style="object-fit: cover"
                 :preview-teleported="true"
                 :preview-src-list="[scope.row.coverUrl]"
                 :src="
@@ -170,17 +173,13 @@
           align="center"
           :show-overflow-tooltip="true"
         ></el-table-column>
-        <el-table-column label="视频状态" prop="status" width="100px" align="center">
-          <template #default="scope">
-            <KoiTag :tagOptions="videoStatusOptions" :value="scope.row.status"></KoiTag>
-          </template>
-        </el-table-column>
+
         <el-table-column label="上传时间" prop="createDate" width="100px" align="center">
           <template #default="scope">
             {{ formatDateTime(scope.row.createDate) }}
           </template>
         </el-table-column>
-        <el-table-column label="删除时间" prop="delDate" width="50px" align="center">
+        <el-table-column label="删除时间" prop="delDate" width="100px" align="center">
           <template #default="scope">
             {{ formatDateTime(scope.row.delDate) }}
           </template>
@@ -193,6 +192,16 @@
           v-auth="['system:role:update', 'system:role:delete']"
         >
           <template #default="{ row }">
+            <el-tooltip content="审核🌻" placement="top">
+              <el-button
+                type="success"
+                icon="DocumentChecked"
+                circle
+                plain
+                @click="handleReview(row)"
+                v-auth="['system:role:update']"
+              ></el-button>
+            </el-tooltip>
             <el-tooltip content="修改🌻" placement="top">
               <el-button
                 type="primary"
@@ -217,7 +226,6 @@
         </el-table-column>
       </el-table>
       <div class="h-20px"></div>
-      <!-- {{ searchParams.pageNo }} --- {{ searchParams.pageSize }} -->
       <!-- 分页 -->
       <el-pagination
         background
@@ -230,7 +238,43 @@
         @size-change="handleListPage"
         @current-change="handleListPage"
       />
-
+      <!-- 审核 -->
+      <KoiDrawer
+        ref="DrawerRef"
+        :title="title"
+        @koiConfirm="handleReviewCancel"
+        @koiCancel="handleReviewCancel"
+        :loading="confirmLoading"
+        size="600"
+      >
+        <template #content>
+          <el-row>
+            <video
+              :src="form.videoUrl"
+              controls
+              style="margin-bottom: 18px; width: 100%; height: 100%; aspect-ratio: 16/9; background-color: black"
+            />
+          </el-row>
+          <el-row>
+            <el-card style="width: 100%" shadow="always">
+              <el-row>
+                <el-col style="display: flex; justify-content: space-between">
+                  <KoiTag
+                    :tagOptions="videoStatusOptions"
+                    :value="form.status"
+                    style="display: inline; align-content: center"
+                  ></KoiTag>
+                  <div>
+                    <el-button type="primary" @click="handleReviewClick(form.vid, 1)">审核通过</el-button>
+                    <el-button type="warning" @click="handleReviewClick(form.vid, 2)">不予过审</el-button>
+                    <el-button type="danger" @click="handleReviewClick(form.vid, 3)">删除视频</el-button>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-card>
+          </el-row>
+        </template>
+      </KoiDrawer>
       <!-- 添加 OR 修改 -->
       <KoiDrawer
         ref="koiDrawerRef"
@@ -247,20 +291,19 @@
                   <el-input v-model="form.title" placeholder="请输入视频标题" clearable />
                 </el-form-item>
               </el-col>
-              <el-col :sm="{ span: 24 }" :xs="{ span: 24 }">
-                <el-form-item label="视频封面" prop="videoUrl">
-                  <KoiUploadImage v-model:imageUrl="form.coverUrl">
-                    <template #content>
-                      <el-icon>
-                        <Avatar />
-                      </el-icon>
-                      <span>请上传视频封面</span>
-                    </template>
-                    <template #tip>图片最大为 3M</template>
-                  </KoiUploadImage>
-                  <!-- <el-input v-model="form.avatar" placeholder="请输入用户头像地址" clearable /> -->
-                </el-form-item>
-              </el-col>
+              <!--              <el-col :sm="{ span: 24 }" :xs="{ span: 24 }">-->
+              <!--                <el-form-item label="视频封面" prop="videoUrl">-->
+              <!--                  <KoiUploadImage v-model:imageUrl="form.coverUrl">-->
+              <!--                    <template #content>-->
+              <!--                      <el-icon>-->
+              <!--                        <Avatar />-->
+              <!--                      </el-icon>-->
+              <!--                      <span>请上传视频封面</span>-->
+              <!--                    </template>-->
+              <!--                    <template #tip>图片最大为 3M</template>-->
+              <!--                  </KoiUploadImage>-->
+              <!--                </el-form-item>-->
+              <!--              </el-col>-->
               <el-col :sm="{ span: 24 }" :xs="{ span: 24 }">
                 <el-form-item label="视频简介" prop="descr">
                   <el-input v-model="form.descr" :rows="5" type="textarea" placeholder="请输入视频简介" />
@@ -268,7 +311,6 @@
               </el-col>
             </el-row>
           </el-form>
-          <!--          {{ form }}-->
         </template>
       </KoiDrawer>
 
@@ -317,7 +359,7 @@ import { listPage, getById, add, update, deleteById, batchDelete, updateStatus }
 import { listNormalRole, assignUserRole } from "@/api/system/role/index.ts";
 // @ts-ignore
 import { listDataByType } from "@/api/system/dict/data/index.ts";
-import { formatDateTime, koiDatePicker } from "@/utils/index.ts";
+import { formatDateTime, formatDuration, koiDatePicker } from "@/utils/index.ts";
 
 // 表格加载动画Loading
 const loading = ref(false);
@@ -329,9 +371,9 @@ const tableList = ref<any>([]);
 const searchParams = ref({
   pageNo: 1, // 第几页
   pageSize: 10, // 每页显示多少条
-  loginName: "",
-  userName: "",
-  phone: ""
+  vid: "",
+  username: "",
+  title: ""
 });
 
 const total = ref<number>(0);
@@ -341,9 +383,9 @@ const resetSearchParams = () => {
   searchParams.value = {
     pageNo: 1,
     pageSize: 10,
-    loginName: "",
-    userName: "",
-    phone: ""
+    vid: "",
+    username: "",
+    title: ""
   };
   dateRange.value = [];
 };
@@ -423,9 +465,7 @@ const handleTableData = async () => {
 onMounted(() => {
   // 获取表格数据
   handleListPage();
-  handleDict1();
-  handleDict2();
-  handleDict3();
+  handleDict();
 });
 
 // 翻译数据[用户类型]
@@ -433,13 +473,13 @@ const videoStatusOptions = ref();
 const videoTypeOptions = ref();
 const authTypeOptions = ref();
 /** 字典翻译tag */
-const handleDict1 = async () => {
+const handleDict = async () => {
   try {
     videoStatusOptions.value = [
       {
         dictLabel: "审核中",
         dictValue: 0,
-        dictTag: "primary",
+        dictTag: "warning",
         dictColor: ""
       },
       {
@@ -451,23 +491,16 @@ const handleDict1 = async () => {
       {
         dictLabel: "未过审",
         dictValue: 2,
-        dictTag: "warning",
+        dictTag: "danger",
         dictColor: ""
       },
       {
         dictLabel: "已删除",
         dictValue: 3,
-        dictTag: "danger",
+        dictTag: "error",
         dictColor: ""
       }
     ];
-  } catch (error) {
-    console.log(error);
-    koiMsgError("数据字典查询失败，请刷新重试🌻");
-  }
-};
-const handleDict2 = async () => {
-  try {
     videoTypeOptions.value = [
       {
         dictLabel: "自制",
@@ -482,13 +515,6 @@ const handleDict2 = async () => {
         dictColor: ""
       }
     ];
-  } catch (error) {
-    console.log(error);
-    koiMsgError("数据字典查询失败，请刷新重试🌻");
-  }
-};
-const handleDict3 = async () => {
-  try {
     authTypeOptions.value = [
       {
         dictLabel: "未声明",
@@ -541,14 +567,43 @@ const handleEcho = async (id: any) => {
   }
   try {
     const res: any = await getById(id);
-    console.log(res.data);
     form.value = res.data.video;
   } catch (error) {
     koiNoticeError("数据获取失败，请刷新重试🌻");
     console.log(error);
   }
 };
-
+/** 审核 */
+const handleReview = async (row?: any) => {
+  // 打开对话框
+  DrawerRef.value.koiOpen();
+  koiMsgSuccess("审核🌻");
+  // 重置表单
+  resetForm();
+  // 标题
+  title.value = "视频审核";
+  const vid = row ? row.vid : ids.value[0];
+  if (vid == null || vid == "") {
+    koiMsgError("请选择需要修改的数据🌻");
+  }
+  console.log(vid);
+  // 回显数据
+  await handleEcho(vid);
+};
+const handleReviewClick = async (vid: number, status: number) => {
+  if (!vid || !status) {
+    koiMsgWarning("请选择需要修改的数据🌻");
+    return;
+  }
+  try {
+    await updateStatus({ vid, status });
+    await handleEcho(vid);
+    await handleListPage();
+  } catch (error) {
+    koiNoticeError("数据修改失败，请刷新重试🌻");
+    console.log(error);
+  }
+};
 /** 修改 */
 const handleUpdate = async (row?: any) => {
   // 打开对话框
@@ -558,17 +613,19 @@ const handleUpdate = async (row?: any) => {
   resetForm();
   // 标题
   title.value = "视频修改";
-  const userId = row ? row.uid : ids.value[0];
-  if (userId == null || userId == "") {
+  const vid = row ? row.vid : ids.value[0];
+  if (vid == null || vid == "") {
     koiMsgError("请选择需要修改的数据🌻");
   }
-  console.log(userId);
+  console.log(vid);
   // 回显数据
-  await handleEcho(userId);
+  await handleEcho(vid);
 };
 
 // 添加 OR 修改抽屉Ref
 const koiDrawerRef = ref();
+//审核抽屉Ref
+const DrawerRef = ref();
 // 标题
 const title = ref("视频管理");
 // form表单Ref
@@ -662,6 +719,9 @@ const handleConfirm = () => {
 /** 取消 */
 const handleCancel = () => {
   koiDrawerRef.value.koiClose();
+};
+const handleReviewCancel = () => {
+  DrawerRef.value.koiClose();
 };
 
 /** 状态开关 */

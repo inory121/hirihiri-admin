@@ -9,9 +9,9 @@
 import * as echarts from "echarts";
 import { ref, onMounted, onUnmounted } from "vue";
 
-const selectValue = ref("边牧");
+const selectValue = ref("视频数");
 
-const segmentedOptions = ["边牧", "金毛", "萨摩耶"];
+const segmentedOptions = ["视频数", "评论数", "弹幕数"];
 
 const refChart = ref();
 const chartInstance = ref();
@@ -86,7 +86,7 @@ const initChart = () => {
         type: "line",
         tooltip: {
           valueFormatter: function (value: any) {
-            return value + "笔";
+            return value ;
           }
         },
         // 圆滑连接
@@ -166,7 +166,7 @@ const getData = () => {
 /** 修改图表数据 */ 
 const updateChart = () => {
   yChartData.value = [];
-  if (selectValue.value == "边牧") {
+  if (selectValue.value == "视频数") {
     yChartData.value = [
       72, 33, 66, 26, 77, 
       36, 59, 35, 62, 27, 
@@ -174,7 +174,7 @@ const updateChart = () => {
     ];
   }
 
-  if (selectValue.value == "金毛") {
+  if (selectValue.value == "评论数") {
     yChartData.value = [
       66, 52, 36, 55, 75, 
       48, 59, 73, 56, 66, 
@@ -182,7 +182,7 @@ const updateChart = () => {
     ];
   }
 
-  if (selectValue.value === "萨摩耶") {
+  if (selectValue.value === "弹幕数") {
     yChartData.value = [
       70, 62, 56, 60, 72, 
       55, 61, 46, 58, 52, 
@@ -197,7 +197,7 @@ const updateChart = () => {
     },
     series: [
       {
-        name: "交易笔数",
+        name: "",
         type: "line",
         data: yChartData.value
       }

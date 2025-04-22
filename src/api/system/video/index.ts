@@ -3,13 +3,13 @@ import koi from "@/utils/axios.ts";
 
 // 统一管理接口
 enum API {
-  LIST_PAGE = "/video/get/recommend",
+  LIST_PAGE = "/video/get/all",
   GET_BY_ID = "/video/get/one",
   UPDATE = "/video/update",
   ADD = "/koi/sysLoginUser/add",
   DELETE = "/koi/sysLoginUser/deleteById",
   BATCH_DELETE = "/koi/sysLoginUser/batchDelete",
-  UPDATE_STATUS = "/koi/sysLoginUser/updateStatus"
+  UPDATE_STATUS = "/video/update/status"
 }
 
 // 暴露请求函数
@@ -50,6 +50,6 @@ export const batchDelete = (ids: any) => {
 };
 
 // 修改状态
-export const updateStatus = (id: any, status: any) => {
-  return koi.post(API.UPDATE_STATUS + "/" + id + "/" + status); // 第一种传参方式
+export const updateStatus = (params: any) => {
+  return koi.post(API.UPDATE_STATUS,params); // 第一种传参方式
 };

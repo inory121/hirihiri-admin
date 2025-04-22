@@ -51,7 +51,7 @@ const props = withDefaults(defineProps<IDrawerProps>(), {
   title: "朕很中意你KoiDrawer",
   visible: false,
   size: "450",
-  closeOnClickModel: false,
+  closeOnClickModel: true,
   destroyOnClose: false,
   confirmText: "确定",
   cancelText: "取消",
