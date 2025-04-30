@@ -3,8 +3,8 @@ import koi from "@/utils/axios.ts";
 
 // 统一管理接口
 enum API {
-  LIST_PAGE = "/video/get/all",
-  GET_BY_ID = "/video/get/one",
+  LIST_PAGE = "/video/all",
+  GET_BY_ID = "/video/",
   UPDATE = "/video/update",
   ADD = "/koi/sysLoginUser/add",
   DELETE = "/koi/sysLoginUser/deleteById",
