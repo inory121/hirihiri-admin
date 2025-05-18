@@ -12,15 +12,18 @@ const config = {
   baseURL: import.meta.env.VITE_WEB_BASE_API,
   timeout: 10000
 };
+
 // 返回值类型
 export interface Result<T = any> {
   code: number;
   msg: string;
   data: T;
 }
+
 // 只有请求封装用的Yu，方便简写
 class Yu {
   private instance: AxiosInstance;
+
   // 初始化
   constructor(config: AxiosRequestConfig) {
     // 实例化axios
@@ -28,6 +31,7 @@ class Yu {
     // 配置拦截器
     this.interceptors();
   }
+
   // 拦截器
   private interceptors() {
     // 请求发送之前的拦截器：携带token
@@ -68,8 +72,9 @@ class Yu {
           return Promise.reject(res.data);
         } else {
           // console.log("后端返回数据：", res.data.msg)
-          koiMsgError(res.data.msg + "🌻" || "服务器偷偷跑到火星去玩了🌻");
-          return Promise.reject(res.data.msg + "🌻" || "服务器偷偷跑到火星去玩了🌻"); // 可以将异常信息延续到页面中处理，使用try{}catch(error){};
+          const errorMsg = res.data.message || res.data.msg || "服务器偷偷跑到火星去玩了🌻";
+          koiMsgError(errorMsg);
+          return Promise.reject(errorMsg); // 可以将异常信息延续到页面中处理，使用try{}catch(error){};
         }
       },
       (error: any) => {
@@ -137,23 +142,28 @@ class Yu {
         return Promise.reject(error); // 将错误返回给 try{} catch(){} 中进行捕获，就算不进行捕获，上方 res.data.status != 200 也会抛出提示。
       }
     );
-  };
+  }
+
   // Get请求
   get<T = Result>(url: string, params?: object): Promise<T> {
     return this.instance.get(url, { params });
-  };
+  }
+
   // Post请求
   post<T = Result>(url: string, data?: object): Promise<T> {
     return this.instance.post(url, data);
-  };
+  }
+
   // Put请求
   put<T = Result>(url: string, data?: object): Promise<T> {
     return this.instance.put(url, data);
-  };
+  }
+
   // Delete请求 /yu/role/1
   delete<T = Result>(url: string): Promise<T> {
     return this.instance.delete(url);
-  };
+  }
+
   // 图片上传
   upload<T = Result>(url: string, formData?: object): Promise<T> {
     return this.instance.post(url, formData, {
@@ -161,7 +171,8 @@ class Yu {
         "Content-Type": "multipart/form-data"
       }
     });
-  };
+  }
+
   // 导出Excel
   exportExcel<T = Result>(url: string, params?: object): Promise<T> {
     return axios.get(import.meta.env.VITE_SERVER + url, {
@@ -172,16 +183,17 @@ class Yu {
       },
       responseType: "blob"
     });
-  };
+  }
+
   // 下载
   download<T = Result>(url: string, data?: object): Promise<T> {
     return axios.post(import.meta.env.VITE_SERVER + url, data, {
       headers: {
         Authorization: "Bearer " + getToken()
       },
-      responseType: 'blob'
+      responseType: "blob"
     });
-  };
+  }
 }
 
 export default new Yu(config);

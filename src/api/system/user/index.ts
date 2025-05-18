@@ -5,7 +5,7 @@ import type { ILoginParams } from "./type.ts";
 
 // 统一管理接口
 enum API {
-  KOI_LOGIN = "/user/login",
+  KOI_LOGIN = "/user/admin/login",
   KOI_LOGIN_OUT = "/user/logout",
   KOI_DYNAMIC_DATA = "/koi/sysLoginUser/getLoginUserInfo",
   KOI_USERINFO = "/user/info",

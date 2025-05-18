@@ -3,34 +3,34 @@
     <KoiCard>
       <!-- 搜索条件 -->
       <el-form v-show="showSearch" :inline="true">
-        <el-form-item label="登录账号" prop="username">
+        <el-form-item label="用户ID" prop="uid">
           <el-input
-            placeholder="请输入登录账号"
+            placeholder="请输入用户ID"
+            v-model="searchParams.uid"
+            clearable
+            style="width: 200px"
+            @keyup.enter.native="handleListPage"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="用户名" prop="username">
+          <el-input
+            placeholder="请输入用户名"
             v-model="searchParams.username"
             clearable
             style="width: 200px"
             @keyup.enter.native="handleListPage"
           ></el-input>
         </el-form-item>
-        <el-form-item label="用户名称" prop="nickname">
+        <el-form-item label="用户昵称" prop="nickname">
           <el-input
-            placeholder="请输入用户名称"
+            placeholder="请输入用户昵称"
             v-model="searchParams.nickname"
             clearable
             style="width: 200px"
             @keyup.enter.native="handleListPage"
           ></el-input>
         </el-form-item>
-        <el-form-item label="手机号" prop="phone">
-          <el-input
-            placeholder="请输入手机号"
-            v-model="searchParams.phone"
-            clearable
-            style="width: 200px"
-            @keyup.enter.native="handleListPage"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="登录时间" prop="loginTime">
+        <el-form-item label="创建时间" prop="loginTime">
           <el-date-picker
             v-model="dateRange"
             type="datetimerange"
@@ -79,8 +79,8 @@
         empty-text="暂时没有数据哟🌻"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55" align="center" fixed/>
-        <el-table-column label="用户ID" prop="uid" width="80px" align="center" type="index"></el-table-column>
+        <el-table-column type="selection" width="55" align="center" fixed />
+        <el-table-column label="UID" prop="uid" width="80px" align="center" type="index"></el-table-column>
         <el-table-column
           label="登录账号"
           prop="username"
@@ -275,11 +275,11 @@
                   <!-- <el-input v-model="form.avatar" placeholder="请输入用户头像地址" clearable /> -->
                 </el-form-item>
               </el-col>
-<!--              <el-col :sm="{ span: 24 }" :xs="{ span: 24 }">-->
-<!--                <el-form-item label="手机号" prop="phone">-->
-<!--                  <el-input v-model="form.phone" placeholder="请输入手机号"></el-input>-->
-<!--                </el-form-item>-->
-<!--              </el-col>-->
+              <!--              <el-col :sm="{ span: 24 }" :xs="{ span: 24 }">-->
+              <!--                <el-form-item label="手机号" prop="phone">-->
+              <!--                  <el-input v-model="form.phone" placeholder="请输入手机号"></el-input>-->
+              <!--                </el-form-item>-->
+              <!--              </el-col>-->
               <el-col :sm="{ span: 24 }" :xs="{ span: 24 }">
                 <el-form-item label="个性签名" prop="description">
                   <el-input v-model="form.description" :rows="5" type="textarea" placeholder="请输入个性签名" />
@@ -287,7 +287,7 @@
               </el-col>
             </el-row>
           </el-form>
-<!--          {{ form }}-->
+          <!--          {{ form }}-->
         </template>
       </KoiDrawer>
 
@@ -350,7 +350,7 @@ const searchParams = ref({
   pageSize: 10, // 每页显示多少条
   username: "",
   nickname: "",
-  phone: ""
+  uid: null
 });
 
 const total = ref<number>(0);
@@ -362,7 +362,7 @@ const resetSearchParams = () => {
     pageSize: 10,
     username: "",
     nickname: "",
-    phone: ""
+    uid: null
   };
   dateRange.value = [];
 };
@@ -447,7 +447,7 @@ onMounted(() => {
 
 // 翻译数据[用户类型]
 const userTypeOptions = ref();
-const userRoleOptions = ref()
+const userRoleOptions = ref();
 /** 字典翻译tag */
 const handleDict1 = async () => {
   try {
@@ -635,7 +635,7 @@ const resetForm = () => {
 
 /** 表单规则 */
 const rules = reactive({
-  username: [{ required: true, message: "请输入用户名字", trigger: "blur" }],
+  username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
   role: [{ required: true, message: "请选择用户类型", trigger: "blur" }],
   state: [{ required: true, message: "请选择用户状态", trigger: "blur" }],
   vip: [{ required: true, message: "请选择会员状态", trigger: "blur" }]

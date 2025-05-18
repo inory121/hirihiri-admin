@@ -1,3 +1,8 @@
+import { sha256 } from "js-sha256";
+
+export function hashPassword(password: string|number, salt: string = 'hiri_frontend_salt'): string {
+  return sha256(password + salt);
+}
 // 格式化视频时长
 export const formatDuration = (seconds: number) => {
   const total = Math.round(seconds)

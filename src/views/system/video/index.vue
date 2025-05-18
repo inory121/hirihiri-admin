@@ -145,10 +145,11 @@
           align="center"
           :show-overflow-tooltip="true"
         ></el-table-column>
-        <el-table-column label="视频封面" prop="coverUrl" width="200px" align="center" :show-overflow-tooltip="true">
+        <el-table-column label="视频封面" prop="coverUrl" width="200px"  align="center" :show-overflow-tooltip="true">
           <template #default="scope">
             <div class="flex flex-justify-center">
               <el-image
+                class="video-cover"
                 :preview-teleported="true"
                 :preview-src-list="[scope.row.coverUrl]"
                 :src="
@@ -858,5 +859,11 @@ const handleBatchDelete = () => {
 // 穿梭框高度调整
 :deep(.el-transfer-panel__body) {
   height: 400px;
+}
+.video-cover {
+  width: 200px;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  overflow: hidden;
 }
 </style>

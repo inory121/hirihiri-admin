@@ -15,13 +15,19 @@
           <div class="chroma-text text-lg text-center <md:hidden">{{ $t("login.description") }}</div>
         </div>
         <!-- 备案号-->
-<!--        <div class="beianhao select-none <md:hidden">-->
-<!--          <a class="chroma-text" href="https://beian.miit.gov.cn/" target="_blank"-->
-<!--            >{{ $t("login.beianhao") }}：豫ICP备2022022094号-1</a-->
-<!--          >-->
-<!--        </div>-->
+        <!--        <div class="beianhao select-none <md:hidden">-->
+        <!--          <a class="chroma-text" href="https://beian.miit.gov.cn/" target="_blank"-->
+        <!--            >{{ $t("login.beianhao") }}：豫ICP备2022022094号-1</a-->
+        <!--          >-->
+        <!--        </div>-->
       </el-col>
-      <el-col :lg="8" :md="12" :sm="9" :xs="24" class="dark:bg-#161616 bg-gray-100 flex flex-items-center flex-justify-center flex-col">
+      <el-col
+        :lg="8"
+        :md="12"
+        :sm="9"
+        :xs="24"
+        class="dark:bg-#161616 bg-gray-100 flex flex-items-center flex-justify-center flex-col"
+      >
         <div class="flex flex-items-center">
           <el-image class="rounded-full w-36px h-36px" :src="logo" />
           <div class="ml-6px font-bold text-xl">{{ loginTitle || "KOI-ADMIN 管理平台" }}</div>
@@ -45,21 +51,21 @@
               v-model="loginForm.password"
             />
           </el-form-item>
-<!--          <el-form-item prop="securityCode">-->
-<!--            <el-input-->
-<!--              type="text"-->
-<!--              :placeholder="$t('login.security')"-->
-<!--              :suffix-icon="Open"-->
-<!--              v-model="loginForm.securityCode"-->
-<!--              @keydown.enter="handleKoiLogin"-->
-<!--            ></el-input>-->
-<!--          </el-form-item>-->
-<!--          <el-form-item>-->
-<!--            <el-image class="w-100px h-30px" :src="loginForm.captchaPicture" @click="handleCaptcha" />-->
-<!--            <el-button text size="small" class="ml-6px" @click="handleCaptcha">-->
-<!--              <div class="text-gray-400 hover:text-#8B5CF6 select-none">{{ $t("login.blur") }}</div>-->
-<!--            </el-button>-->
-<!--          </el-form-item>-->
+          <!--          <el-form-item prop="securityCode">-->
+          <!--            <el-input-->
+          <!--              type="text"-->
+          <!--              :placeholder="$t('login.security')"-->
+          <!--              :suffix-icon="Open"-->
+          <!--              v-model="loginForm.securityCode"-->
+          <!--              @keydown.enter="handleKoiLogin"-->
+          <!--            ></el-input>-->
+          <!--          </el-form-item>-->
+          <!--          <el-form-item>-->
+          <!--            <el-image class="w-100px h-30px" :src="loginForm.captchaPicture" @click="handleCaptcha" />-->
+          <!--            <el-button text size="small" class="ml-6px" @click="handleCaptcha">-->
+          <!--              <div class="text-gray-400 hover:text-#8B5CF6 select-none">{{ $t("login.blur") }}</div>-->
+          <!--            </el-button>-->
+          <!--          </el-form-item>-->
           <!-- 登录按钮 -->
           <el-form-item>
             <el-button
@@ -68,19 +74,19 @@
               class="w-245px bg-[--el-color-primary]"
               round
               v-throttle:3000="handleKoiLogin"
-              >{{ $t("login.in") }}</el-button
-            >
-            <el-button type="primary" v-else class="w-245px bg-[--el-color-primary]" round :loading="loading">{{
-              $t("login.center")
-            }}</el-button>
+              >{{ $t("login.in") }}
+            </el-button>
+            <el-button type="primary" v-else class="w-245px bg-[--el-color-primary]" round :loading="loading"
+              >{{ $t("login.center") }}
+            </el-button>
           </el-form-item>
         </el-form>
         <!-- 备案号-->
-<!--        <div class="beianhao select-none lg:hidden">-->
-<!--          <a class="chroma-text" href="https://beian.miit.gov.cn/" target="_blank"-->
-<!--            >{{ $t("login.beianhao") }}：豫ICP备2022022094号-1</a-->
-<!--          >-->
-<!--        </div>-->
+        <!--        <div class="beianhao select-none lg:hidden">-->
+        <!--          <a class="chroma-text" href="https://beian.miit.gov.cn/" target="_blank"-->
+        <!--            >{{ $t("login.beianhao") }}：豫ICP备2022022094号-1</a-->
+        <!--          >-->
+        <!--        </div>-->
       </el-col>
     </el-row>
 
@@ -89,7 +95,7 @@
 </template>
 
 <script lang="ts" setup>
-import { User, Lock, Open } from "@element-plus/icons-vue";
+import { User, Lock } from "@element-plus/icons-vue";
 // @ts-ignore
 import { ref, reactive, onMounted, onUnmounted, computed } from "vue";
 
@@ -97,7 +103,7 @@ import type { FormInstance, FormRules } from "element-plus";
 import { koiMsgWarning, koiMsgError } from "@/utils/koi.ts";
 import { useRouter } from "vue-router";
 // import { koiLogin, getCaptcha } from "@/api/system/login/index.ts";
-import authLogin from "@/assets/json/authLogin.json";
+
 import useUserStore from "@/stores/modules/user.ts";
 import useKeepAliveStore from "@/stores/modules/keepAlive.ts";
 import { HOME_URL, LOGIN_URL } from "@/config/index.ts";
@@ -109,10 +115,9 @@ import settings from "@/settings";
 import KoiDark from "./components/KoiDark.vue";
 import KoiLoading from "./components/KoiLoading.vue";
 import KoiLanguage from "./components/KoiLanguage.vue";
-import { getLanguage } from "@/utils/index.ts";
+import { getLanguage, hashPassword } from "@/utils/index.ts";
 import useGlobalStore from "@/stores/modules/global.ts";
-import {koiLogin} from "@/api/system/user";
-
+import { koiLogin } from "@/api/system/user";
 
 // 标题语言切换
 const loginTitle = ref(settings.loginTitle);
@@ -214,8 +219,7 @@ const handleKoiLogin = () => {
       loading.value = true;
       try {
         // 1、执行登录接口
-        const res: any = await koiLogin({ username, password });
-        console.log(res.data)
+        const res: any = await koiLogin({ username, password: hashPassword(password) });
         userStore.setToken(res.data.token);
         userStore.setUserInfo(res.data.user);
         // userStore.setToken(authLogin.data.tokenValue);
