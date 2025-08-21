@@ -862,7 +862,7 @@ const handleBatchDelete = () => {
 }
 .video-cover {
   width: 200px;
-  aspect-ratio: 16/9;
+  //aspect-ratio: 16/9;
   object-fit: cover;
   overflow: hidden;
 }

@@ -34,20 +34,25 @@ const userStore = useUserStore();
 const router = useRouter();
 // 退出登录
 const handleLayout = async () => {
-  const res = await koiLogout();
-  if (res.code === 200) {
-    koiMsgSuccess("退出成功🌻");
-  } else {
+  try {
+    const res = await koiLogout();
+    if (res.code === 200) {
+      koiMsgSuccess("退出成功🌻");
+    } else {
+      koiMsgError("退出失败，请稍后重试🌻");
+    }
+  } catch (e) {
     koiMsgError("退出失败，请稍后重试🌻");
+  } finally {
+    koiSessionStorage.clear();
+    // 如果不想要保存上次登录设置的全局颜色、布局等，则将下方第一行清空全部代码打开。
+    // koiLocalStorage.clear();
+    koiLocalStorage.remove("user");
+    koiLocalStorage.remove("keepAlive");
+    koiLocalStorage.remove("tabs");
+    // 退出登录。必须使用replace把页面缓存刷掉。
+    window.location.replace(LOGIN_URL);
   }
-  koiSessionStorage.clear();
-  // 如果不想要保存上次登录设置的全局颜色、布局等，则将下方第一行清空全部代码打开。
-  // koiLocalStorage.clear();
-  koiLocalStorage.remove("user");
-  koiLocalStorage.remove("keepAlive");
-  koiLocalStorage.remove("tabs");
-  // 退出登录。必须使用replace把页面缓存刷掉。
-  window.location.replace(LOGIN_URL);
 };
 // 用户头像
 const avatar = ref(
